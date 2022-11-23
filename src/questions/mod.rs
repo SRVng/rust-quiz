@@ -11,12 +11,12 @@ pub struct Quizzes<'a> {
 }
 
 pub fn intro() {
-    println!("");
+    println!();
     println!("=== Instructions ===");
     println!("Type A, B, C, or D (Non-case sensitive) to answer");
     println!("Type exit to leave the game");
     println!("Type help to show this again");
-    println!("");
+    println!();
 }
 
 fn prompt(symbol: &str) -> String {
