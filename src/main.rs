@@ -1,27 +1,12 @@
+mod helper;
 mod questions;
+mod parser;
 
-use questions::{intro, Quiz, Quizzes};
+use helper::intro;
+use parser::parse_question_to_string;
+use questions::{Question, Ask};
 
 fn main() {
     intro();
-
-    let test: Vec<Quizzes> = vec![
-        Quizzes {
-            question: "which programming language is this CLI written in",
-            choices: vec!["Typescript", "Python", "Rust", "English"],
-            answer: "C",
-        },
-        Quizzes {
-            question: "What does the abbreviation \"LRU Cache\" stand for",
-            choices: vec![
-                "Laugh Really Ugly",
-                "Lone Recovery Union",
-                "Large Resemble Union",
-                "Least Recently Used",
-            ],
-            answer: "D",
-        },
-    ];
-
-    test.ask();
+    serde_json::from_str::<Vec<Question<String>>>(&parse_question_to_string().as_str()).unwrap().ask();
 }
