@@ -1,5 +1,5 @@
-use std::{cell::Cell, fmt::Display};
 use serde::Deserialize;
+use std::fmt::Display;
 
 use crate::helper::{intro, prompt};
 
@@ -9,7 +9,11 @@ pub trait Builder<'a, T> {
 }
 
 #[derive(Deserialize, Clone, Debug)]
-pub struct Question<'a, T> where T: Clone + Default, Vec<T>: Clone {
+pub struct Question<'a, T>
+where
+    T: Clone + Default,
+    Vec<T>: Clone,
+{
     pub question: &'a str,
     pub quote: Option<&'a str>,
     pub choices: Vec<T>,
@@ -26,8 +30,13 @@ impl Builder<'static, String> for Question<'static, String> {
             ) -> Box<
                 dyn FnOnce(
                     Vec<String>,
-                )
-                    -> Box<dyn FnOnce(&'static str) -> Box<dyn FnOnce() -> Question<'static, String> + 'static> + 'static>,
+                ) -> Box<
+                    dyn FnOnce(
+                            &'static str,
+                        )
+                            -> Box<dyn FnOnce() -> Question<'static, String> + 'static>
+                        + 'static,
+                >,
             >,
         >,
     >;
@@ -61,7 +70,11 @@ pub struct QuestionBuilder<'a, T> {
     answer: Option<&'a str>,
 }
 
-impl<'a, T> QuestionBuilder<'a, T> where T: Clone + Default, Vec<T>: Clone {
+impl<'a, T> QuestionBuilder<'a, T>
+where
+    T: Clone + Default,
+    Vec<T>: Clone,
+{
     fn build(&self) -> Question<'a, T> {
         Question {
             question: self.question.expect("No question provided").into(),
@@ -96,7 +109,11 @@ pub trait Ask {
     fn ask(&self);
 }
 
-impl<'a, T> Ask for Vec<Question<'a, T>> where T: Clone + Default + Display, Vec<T>: Clone {
+impl<'a, T> Ask for Vec<Question<'a, T>>
+where
+    T: Clone + Default + Display,
+    Vec<T>: Clone,
+{
     fn ask(&self) {
         'outer: for (index, quiz) in self.into_iter().enumerate() {
             let mut wrong_counter: u8 = 0;
@@ -128,7 +145,11 @@ impl<'a, T> Ask for Vec<Question<'a, T>> where T: Clone + Default + Display, Vec
     }
 }
 
-fn print_question<T>(quiz: &Question<T>, index: usize) where T: Clone + Default + Display, Vec<T>: Clone {
+fn print_question<T>(quiz: &Question<T>, index: usize)
+where
+    T: Clone + Default + Display,
+    Vec<T>: Clone,
+{
     println!("\u{001b}[31;1mQ{}: {}", index + 1, &quiz.question);
 
     if let Some(quote) = &quiz.quote {
@@ -151,10 +172,7 @@ fn print_question<T>(quiz: &Question<T>, index: usize) where T: Clone + Default 
         }
     };
 
-    quiz.choices
-        .iter()
-        .enumerate()
-        .for_each(|(index, choice)| {
-            println!("\u{001b}[37;1m{}) {}\u{001b}[0m", choices(index), choice)
-        });
+    quiz.choices.iter().enumerate().for_each(|(index, choice)| {
+        println!("\u{001b}[37;1m{}) {}\u{001b}[0m", choices(index), choice)
+    });
 }
